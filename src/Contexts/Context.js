@@ -2,15 +2,24 @@ import React, { createContext } from "react";
 
 
 export const SnakeContext = createContext();
+export const BOARD_SIZE = 10;
+export const Start_vaue_snake = 44;
+export const Start_value_food = 48;
+export const StartNextValue = {
+  row: BOARD_SIZE / 3,
+  col: BOARD_SIZE / 3,
+  cell: Start_vaue_snake,
+};
+export const Direction = {
+  RIGHT: "RIGHT",
+  UP: "UP",
+  LEFT: "LEFT",
+  DOWN: "DOWN",
+};
 
 const SnakeContextProvider = ({ children }) => {
 
-  const Direction = {
-    Right: "Right",
-    Up: "Up",
-    Left: "Left",
-    Down: "Down",
-  };
+ 
   class SnakeNode {
     constructor(value) {
       this.value = value;
@@ -27,7 +36,6 @@ const SnakeContextProvider = ({ children }) => {
   
 
   const SnakeData = {
-    Direction,
     SnakeNode,
     SnakeBody
   };

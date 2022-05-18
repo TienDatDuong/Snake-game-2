@@ -27,6 +27,9 @@
 .cell-basic{
   background-color: rgb(39, 148, 191);
 }
+.snake-tail{
+  background-color: orange;
+}
 h1{
   margin-left: 40%;
   color: #000;
