@@ -46,4 +46,9 @@ header {
   margin-top: 30px;
   cursor: pointer;
   margin-left: 25%;
+  outline: none;
+}
+.pause:active{
+  background-color: grey;
+  color: #fff;
 }
