@@ -1,10 +1,8 @@
 import React, { createContext } from "react";
-
-
 export const SnakeContext = createContext();
-export const BOARD_SIZE = 10;
-export const Start_vaue_snake = 44;
-export const Start_value_food = 48;
+export const BOARD_SIZE = 15;
+export const Start_vaue_snake = 81;
+export const Start_value_food = 84;
 export const StartNextValue = {
   row: BOARD_SIZE / 3,
   col: BOARD_SIZE / 3,

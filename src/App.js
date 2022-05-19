@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react";
 import { SnakeContext } from "./Contexts/Context";
 import "./App.css";
 import create_board from "./Components/board";
-import CreateTable from "./Components/CreateTable";
 import ComsumptionFood from "./Components/RamdomFood";
 import {
   BOARD_SIZE,
@@ -11,6 +10,7 @@ import {
   Direction,
 } from "./Contexts/Context";
 import { useInterval } from "./lib/utlils";
+import CreateTable from "./Components/CreateTable";
 const getStartingSnakeLLValue = (board) => {
   const rowSize = board.length;
   const colSize = board[0].length;
@@ -29,7 +29,9 @@ function App() {
   const [score, setScore] = useState(0);
   const [board, setBoard] = useState(create_board(BOARD_SIZE));
   const [snakeFood, setSnakeFood] = useState(Start_value_food);
-  const [snakeCells, setSnakeCells] = useState(new Set([StartNextValue]));
+  const [snakeCells, setSnakeCells] = useState(new Set([StartNextValue.cell]));
+  const [isStart, setIsStart] = useState(false);
+  const [delays, setDelays] = useState(100000 * 100000);
   const [snake, setSnake] = useState(
     new SnakeBody(getStartingSnakeLLValue(board))
   );
@@ -37,7 +39,7 @@ function App() {
 
   useInterval(() => {
     moveSnake();
-  }, 300);
+  }, delays);
 
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
@@ -47,10 +49,27 @@ function App() {
 
   const handleKeydown = (e) => {
     const newDirection = getDirectionFromKey(e.key);
-    console.log("e-direction", e.key, newDirection);
     const isValidDirection = newDirection !== "";
-    if(!isValidDirection) return;
+    if (!isValidDirection) return;
     setDirection(newDirection);
+  };
+  const handleStart = () => {
+    console.log("start");
+    setDelays(Number(250));
+    setScore(0);
+    const snakeStartingValue = getStartingSnakeLLValue(board);
+    setSnakeFood(snakeStartingValue.cell + 3);
+    setSnakeCells(new Set([snakeStartingValue.cell]));
+    setSnake(new SnakeBody(snakeStartingValue));
+    setDirection(Direction.RIGHT);
+  };
+  const handlePause = () => {
+    setIsStart(!isStart)
+    if (isStart === true) {
+      setDelays(100000*100000)
+    }else{
+      setDelays(250)
+    }
   };
 
   const moveSnake = () => {
@@ -59,9 +78,7 @@ function App() {
       col: snake.head.value.col,
     };
     const NextHeadSnake = getNextHeadSnake(currentHeadSnake, direction);
-    console.log("NextHeadSnake", direction, NextHeadSnake);
     if (isOutOfBoard(NextHeadSnake, board)) {
-      console.log("board");
       restartGame();
       return;
     }
@@ -70,7 +87,6 @@ function App() {
       restartGame();
       return;
     }
-    
 
     const newHead = new SnakeNode({
       row: NextHeadSnake.row,
@@ -89,29 +105,31 @@ function App() {
     snake.tail = snake.tail.next;
     if (snake.tail === null) snake.tail = snake.head;
 
-    const foodConsumed = newValueSnake  === snakeFood
-    if (foodConsumed){
-      handleComsumptionFood(newSnakeCell)
-      growSnake(newSnakeCell)
+    const foodConsumed = newValueSnake === snakeFood;
+    if (foodConsumed) {
+      handleComsumptionFood(newSnakeCell);
+      growSnake(newSnakeCell);
     }
 
     setSnakeCells(newSnakeCell);
   };
+
+  // const moveSnake = () => {
+
+  // };
   const growSnake = (newSnakeCell) => {
     const growthNodeCoords = getGrowthNodeCoords(snake.tail, direction);
-    const newTailCell = board[growthNodeCoords.row][growthNodeCoords.col]
-    console.log("growthNodeCoords",growthNodeCoords)
+    const newTailCell = board[growthNodeCoords.row][growthNodeCoords.col];
     const newTail = new SnakeNode({
-      row:growthNodeCoords.row,
-      col:growthNodeCoords.col,
-      cell:newTailCell
-    })
-    const currentTail = snake.tail
-    snake.tail = newTail
-    snake.tail.next = currentTail 
-    newSnakeCell.add(newTailCell)
-  } 
-
+      row: growthNodeCoords.row,
+      col: growthNodeCoords.col,
+      cell: newTailCell,
+    });
+    const currentTail = snake.tail;
+    snake.tail = newTail;
+    snake.tail.next = currentTail;
+    newSnakeCell.add(newTailCell);
+  };
 
   const handleComsumptionFood = (newSnakeCell) => {
     const max = BOARD_SIZE * BOARD_SIZE;
@@ -125,12 +143,7 @@ function App() {
     setScore(score + 1);
   };
   const restartGame = () => {
-    setScore(0);
-    const snakeStartingValue = getStartingSnakeLLValue(board);
-    setSnakeFood(snakeStartingValue.cell + 3);
-    setSnakeCells(new Set([snakeStartingValue.cell]));
-    setSnake(new SnakeBody(snakeStartingValue));
-    setDirection(Direction.RIGHT);
+    setScore(" 0 - Game Over");
   };
 
   return (
@@ -141,12 +154,14 @@ function App() {
         snakeFood={snakeFood}
         score={score}
         snake={snake}
+        handlePause={handlePause}
+        handleStart={handleStart}
       />
     </div>
   );
 }
+
 const getNextHeadSnake = (node, direction) => {
-  console.log(direction)
   if (direction === Direction.RIGHT) {
     return {
       row: node.row,
@@ -173,12 +188,11 @@ const getNextHeadSnake = (node, direction) => {
   }
 };
 
-
 const getDirectionFromKey = (direction) => {
-  if (direction === "ArrowLeft") return Direction.LEFT;
-  if (direction === "ArrowRight") return Direction.RIGHT;
-  if (direction === "ArrowDown") return Direction.DOWN;
-  if (direction === "ArrowUp") return Direction.UP;
+  if (direction === "ArrowUp" || direction === "w") return Direction.UP;
+  if (direction === "ArrowRight" || direction === "d") return Direction.RIGHT;
+  if (direction === "ArrowDown" || direction === "s") return Direction.DOWN;
+  if (direction === "ArrowLeft" || direction === "a") return Direction.LEFT;
   return "";
 };
 
@@ -188,41 +202,40 @@ const isOutOfBoard = (coords, board) => {
   if (row >= board.length || col >= board[0].length) return true;
   return false;
 };
-const getNextTailDirection = (snakeTail,tailOfDirection) => {
-  if(snakeTail.next === null) return tailOfDirection;
-  const {row:currentRow, col:currentCol} = snakeTail.value;
-  const {row:nextRow, col:nextCol} = snakeTail.next.value;
-  if(currentRow === nextRow && currentCol === nextCol + 1){
-    return Direction.RIGHT
+const getNextTailDirection = (snakeTail, tailOfDirection) => {
+  if (snakeTail.next === null) return tailOfDirection;
+  const { row: currentRow, col: currentCol } = snakeTail.value;
+  const { row: nextRow, col: nextCol } = snakeTail.next.value;
+  if (currentRow === nextRow && currentCol === nextCol + 1) {
+    return Direction.RIGHT;
   }
-  if(currentRow === nextRow && currentCol === nextCol - 1){
-    return Direction.LEFT
+  if (currentRow === nextRow && currentCol === nextCol - 1) {
+    return Direction.LEFT;
   }
-  if(currentRow === nextRow + 1 && currentCol === nextCol ){
-    return Direction.DOWN
+  if (currentRow === nextRow + 1 && currentCol === nextCol) {
+    return Direction.DOWN;
   }
-  if(currentRow === nextRow - 1 && currentCol === nextCol + 1){
-    return Direction.UP
+  if (currentRow === nextRow - 1 && currentCol === nextCol + 1) {
+    return Direction.UP;
   }
-  return ""
-}
-const getGrowthNodeCoords = (snakeTail,tailOfDirection ) => {
-    const tailNextDirection = getNextTailDirection(snakeTail,tailOfDirection)
-    const opposDirection =  getOpppDirection(tailNextDirection)
-    const currentTail = {
-      row:snakeTail.value.row,
-      col:snakeTail.value.col
-    }
-    const growNodeCoods = getNextHeadSnake(currentTail,opposDirection)
+  return "";
+};
+const getGrowthNodeCoords = (snakeTail, tailOfDirection) => {
+  const tailNextDirection = getNextTailDirection(snakeTail, tailOfDirection);
+  const opposDirection = getOpppDirection(tailNextDirection);
+  const currentTail = {
+    row: snakeTail.value.row,
+    col: snakeTail.value.col,
+  };
+  const growNodeCoods = getNextHeadSnake(currentTail, opposDirection);
 
-    return growNodeCoods
-}
-const getOpppDirection = (direction) =>{
-  if(direction === Direction.RIGHT) return Direction.LEFT
-  if(direction === Direction.LEFT) return Direction.RIGHT
-  if(direction === Direction.UP) return Direction.DOWN
-  if(direction === Direction.DOWN) return Direction.UP
-}
-
+  return growNodeCoods;
+};
+const getOpppDirection = (direction) => {
+  if (direction === Direction.RIGHT) return Direction.LEFT;
+  if (direction === Direction.LEFT) return Direction.RIGHT;
+  if (direction === Direction.UP) return Direction.DOWN;
+  if (direction === Direction.DOWN) return Direction.UP;
+};
 
 export default App;
