@@ -1,36 +1,49 @@
-.App{
+.App {
   min-width: 100vh;
   min-height: 100vh;
-  background-color:#fff;
+  background-color: #fff;
   display: flex;
   justify-content: center;
   align-items: center;
   color: #fff;
 }
-.row{
+.row {
   height: 35px;
 }
-.cell{
+.cell {
   height: 35px;
   width: 35px;
   display: inline-block;
-  border: 2px solid ;
+  border: 2px solid;
   text-align: center;
   border-radius: 10px;
 }
-.snake-red{
+.snake-red {
   background-color: red;
 }
-.snake-black{
+.snake-black {
   background-color: #000;
 }
-.cell-basic{
+.cell-basic {
   background-color: rgb(39, 148, 191);
 }
-.snake-tail{
+.snake-tail {
   background-color: orange;
 }
-h1{
+h1 {
   margin-left: 40%;
   color: #000;
+}
+header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pause{
+  padding: 18px 24px;
+  border: none;
+  border-radius: 6px;
+  margin-top: 30px;
+  cursor: pointer;
+  margin-left: 25%;
 }
