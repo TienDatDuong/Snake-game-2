@@ -9,6 +9,7 @@ function CreateTable({
   tail,
   handleStart,
   handlePause,
+  handleRestartGame
 }) {
   return (
     <div>
@@ -44,6 +45,10 @@ function CreateTable({
       <button className="pause" type="" onClick={() => handlePause()}>
         {" "}
         Pause
+      </button>
+      <button className="pause" type="" onClick={() => handleRestartGame()}>
+        {" "}
+        Restart Game
       </button>
     </div>
   );
